@@ -1,0 +1,42 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+*.hprof
+
+# Spring Boot local configuration
+.env
+.env.*
+application-local.yml
+application-local.yaml
+application-dev-local.yml
+application-dev-local.yaml
+application-prod-local.yml
+application-prod-local.yaml
+
+# Logs
+logs/
+*.log
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
