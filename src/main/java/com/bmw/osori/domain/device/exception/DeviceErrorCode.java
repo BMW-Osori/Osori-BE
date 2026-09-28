@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public enum DeviceErrorCode implements ErrorCode {
 
+	DEVICE_NOT_FOUND(HttpStatus.NOT_FOUND, "DEVICE_404", "디바이스를 찾을 수 없습니다."),
 	DUPLICATE_DEVICE_UUID(HttpStatus.CONFLICT, "DEVICE_409", "이미 등록된 디바이스입니다.");
 
 	private final HttpStatus status;

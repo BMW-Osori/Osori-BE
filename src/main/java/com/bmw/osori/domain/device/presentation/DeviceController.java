@@ -3,10 +3,13 @@ package com.bmw.osori.domain.device.presentation;
 import com.bmw.osori.domain.device.application.DeviceService;
 import com.bmw.osori.domain.device.presentation.dto.request.DeviceCreateRequest;
 import com.bmw.osori.domain.device.presentation.dto.response.DeviceCreateResponse;
+import com.bmw.osori.domain.device.presentation.dto.response.DeviceResponse;
 import com.bmw.osori.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +34,12 @@ public class DeviceController {
 		return ResponseEntity
 			.created(URI.create("/api/v1/devices/" + response.deviceId()))
 			.body(ApiResponse.created(response));
+	}
+
+	@GetMapping("/{deviceId}")
+	public ApiResponse<DeviceResponse> getDevice(@PathVariable Long deviceId) {
+		DeviceResponse response = deviceService.getDevice(deviceId);
+
+		return ApiResponse.ok(response);
 	}
 }
