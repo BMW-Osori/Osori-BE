@@ -4,6 +4,7 @@ import com.bmw.osori.domain.proximity.application.ProximityEventService;
 import com.bmw.osori.domain.proximity.domain.AlertLevel;
 import com.bmw.osori.domain.proximity.presentation.dto.request.ProximityEventCreateRequest;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventCreateResponse;
+import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventDetailResponse;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventListResponse;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventPageResponse;
 import com.bmw.osori.global.response.ApiResponse;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -143,6 +145,53 @@ public class ProximityEventController {
 			alertLevel,
 			pageable
 		);
+
+		return ApiResponse.ok(response);
+	}
+
+	@GetMapping("/{eventId}")
+	@Operation(
+		summary = "차량 접근 이벤트 상세 조회",
+		description = "차량 접근 이벤트 ID로 단건 상세 정보를 조회합니다."
+	)
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200",
+			description = "차량 접근 이벤트 상세 조회 성공",
+			content = @Content(
+				schema = @Schema(implementation = ProximityEventDetailResponse.class),
+				examples = @ExampleObject(
+					name = "상세 조회 성공",
+					value = """
+						{
+						  "success": true,
+						  "code": "COMMON_200",
+						  "message": "요청에 성공했습니다.",
+						  "data": {
+						    "eventId": 125,
+						    "deviceId": 1,
+						    "latitude": 37.5665,
+						    "longitude": 126.978,
+						    "maxRssi": -53,
+						    "minEstimatedDistance": 2.8,
+						    "alertLevel": "DANGER",
+						    "consecutiveCount": 5,
+						    "vibrationTriggered": true,
+						    "startedAt": "2026-09-13T11:30:13",
+						    "endedAt": "2026-09-13T11:30:18"
+						  }
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "차량 접근 이벤트를 찾을 수 없음")
+	})
+	public ApiResponse<ProximityEventDetailResponse> getProximityEvent(
+		@Parameter(description = "조회할 차량 접근 이벤트 ID", example = "125")
+		@PathVariable Long eventId
+	) {
+		ProximityEventDetailResponse response = proximityEventService.getProximityEvent(eventId);
 
 		return ApiResponse.ok(response);
 	}

@@ -7,8 +7,10 @@ import com.bmw.osori.domain.proximity.domain.AlertLevel;
 import com.bmw.osori.domain.proximity.domain.ProximityEvent;
 import com.bmw.osori.domain.proximity.domain.ProximityEventRepository;
 import com.bmw.osori.domain.proximity.domain.ProximityEventSpecification;
+import com.bmw.osori.domain.proximity.exception.ProximityEventErrorCode;
 import com.bmw.osori.domain.proximity.presentation.dto.request.ProximityEventCreateRequest;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventCreateResponse;
+import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventDetailResponse;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventListResponse;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventPageResponse;
 import com.bmw.osori.global.exception.BusinessException;
@@ -73,6 +75,17 @@ public class ProximityEventService {
 			.map(ProximityEventListResponse::from);
 
 		return ProximityEventPageResponse.from(page);
+	}
+
+	public ProximityEventDetailResponse getProximityEvent(Long eventId) {
+		ProximityEvent proximityEvent = findProximityEventById(eventId);
+
+		return ProximityEventDetailResponse.from(proximityEvent);
+	}
+
+	private ProximityEvent findProximityEventById(Long eventId) {
+		return proximityEventRepository.findById(eventId)
+			.orElseThrow(() -> new BusinessException(ProximityEventErrorCode.PROXIMITY_EVENT_NOT_FOUND));
 	}
 
 	private Device findDeviceById(Long deviceId) {
