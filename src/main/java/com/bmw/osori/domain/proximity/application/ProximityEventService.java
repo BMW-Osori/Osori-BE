@@ -3,11 +3,19 @@ package com.bmw.osori.domain.proximity.application;
 import com.bmw.osori.domain.device.domain.Device;
 import com.bmw.osori.domain.device.domain.DeviceRepository;
 import com.bmw.osori.domain.device.exception.DeviceErrorCode;
+import com.bmw.osori.domain.proximity.domain.AlertLevel;
 import com.bmw.osori.domain.proximity.domain.ProximityEvent;
 import com.bmw.osori.domain.proximity.domain.ProximityEventRepository;
+import com.bmw.osori.domain.proximity.domain.ProximityEventSpecification;
 import com.bmw.osori.domain.proximity.presentation.dto.request.ProximityEventCreateRequest;
 import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventCreateResponse;
+import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventListResponse;
+import com.bmw.osori.domain.proximity.presentation.dto.response.ProximityEventPageResponse;
 import com.bmw.osori.global.exception.BusinessException;
+import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +52,27 @@ public class ProximityEventService {
 		ProximityEvent savedProximityEvent = proximityEventRepository.saveAndFlush(proximityEvent);
 
 		return ProximityEventCreateResponse.from(savedProximityEvent);
+	}
+
+	public ProximityEventPageResponse<ProximityEventListResponse> getProximityEvents(
+		Long deviceId,
+		LocalDateTime from,
+		LocalDateTime to,
+		AlertLevel alertLevel,
+		Pageable pageable
+	) {
+		Specification<ProximityEvent> specification = Specification
+			.allOf(
+				ProximityEventSpecification.deviceIdEquals(deviceId),
+				ProximityEventSpecification.startedAtGreaterThanOrEqualTo(from),
+				ProximityEventSpecification.startedAtLessThanOrEqualTo(to),
+				ProximityEventSpecification.alertLevelEquals(alertLevel)
+			);
+
+		Page<ProximityEventListResponse> page = proximityEventRepository.findAll(specification, pageable)
+			.map(ProximityEventListResponse::from);
+
+		return ProximityEventPageResponse.from(page);
 	}
 
 	private Device findDeviceById(Long deviceId) {
