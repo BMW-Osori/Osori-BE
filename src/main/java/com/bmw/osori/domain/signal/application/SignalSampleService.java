@@ -7,6 +7,7 @@ import com.bmw.osori.domain.signal.domain.SignalSample;
 import com.bmw.osori.domain.signal.domain.SignalSampleRepository;
 import com.bmw.osori.domain.signal.presentation.dto.request.SignalSampleCreateRequest;
 import com.bmw.osori.domain.signal.presentation.dto.response.SignalSampleCreateResponse;
+import com.bmw.osori.domain.signal.presentation.dto.response.SignalSampleListResponse;
 import com.bmw.osori.global.exception.BusinessException;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,13 @@ public class SignalSampleService {
 		List<SignalSample> savedSignalSamples = signalSampleRepository.saveAll(signalSamples);
 
 		return new SignalSampleCreateResponse(eventId, savedSignalSamples.size());
+	}
+
+	public SignalSampleListResponse getSignalSamples(Long eventId) {
+		findProximityEventById(eventId);
+		List<SignalSample> signalSamples = signalSampleRepository.findAllByProximityEventIdOrderByMeasuredAtAsc(eventId);
+
+		return SignalSampleListResponse.of(eventId, signalSamples);
 	}
 
 	private ProximityEvent findProximityEventById(Long eventId) {
