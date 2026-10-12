@@ -1,6 +1,7 @@
 package com.bmw.osori.domain.riskzone.presentation;
 
 import com.bmw.osori.domain.riskzone.application.RiskZoneService;
+import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneDetailResponse;
 import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneListResponse;
 import com.bmw.osori.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,6 +90,52 @@ public class RiskZoneController {
 		@RequestParam Integer radius
 	) {
 		RiskZoneListResponse response = riskZoneService.getRiskZones(latitude, longitude, radius);
+
+		return ApiResponse.ok(response);
+	}
+
+	@GetMapping("/{riskZoneId}")
+	@Operation(
+		summary = "위험구역 상세 조회",
+		description = "위험구역 ID로 위험구역 단건 상세 정보를 조회합니다."
+	)
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200",
+			description = "위험구역 상세 조회 성공",
+			content = @Content(
+				schema = @Schema(implementation = RiskZoneDetailResponse.class),
+				examples = @ExampleObject(
+					name = "상세 조회 성공",
+					value = """
+						{
+						  "success": true,
+						  "code": "COMMON_200",
+						  "message": "요청에 성공했습니다.",
+						  "data": {
+						    "riskZoneId": 1,
+						    "name": "어린이보호구역 인근 교차로",
+						    "latitude": 37.5665,
+						    "longitude": 126.978,
+						    "radius": 100,
+						    "riskScore": 87.5,
+						    "riskLevel": "HIGH",
+						    "accidentCount": 12,
+						    "modelVersion": "risk-zone-v1.0.0",
+						    "updatedAt": "2026-09-13T11:30:18"
+						  }
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "위험구역을 찾을 수 없음")
+	})
+	public ApiResponse<RiskZoneDetailResponse> getRiskZone(
+		@Parameter(description = "조회할 위험구역 ID", example = "1")
+		@PathVariable Long riskZoneId
+	) {
+		RiskZoneDetailResponse response = riskZoneService.getRiskZone(riskZoneId);
 
 		return ApiResponse.ok(response);
 	}
