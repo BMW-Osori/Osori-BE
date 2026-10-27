@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -18,6 +19,9 @@ public class RiskZone {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(name = "source_key", unique = true, length = 100)
+	private String sourceKey;
 
 	@Column(nullable = false, length = 100)
 	private String name;
@@ -52,6 +56,7 @@ public class RiskZone {
 	}
 
 	private RiskZone(
+		String sourceKey,
 		String name,
 		Double latitude,
 		Double longitude,
@@ -61,6 +66,7 @@ public class RiskZone {
 		Integer accidentCount,
 		String modelVersion
 	) {
+		this.sourceKey = sourceKey;
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -82,6 +88,7 @@ public class RiskZone {
 		String modelVersion
 	) {
 		return new RiskZone(
+			null,
 			name,
 			latitude,
 			longitude,
@@ -93,8 +100,60 @@ public class RiskZone {
 		);
 	}
 
+	public static RiskZone createImported(
+		String sourceKey,
+		String name,
+		Double latitude,
+		Double longitude,
+		Integer radius,
+		Double riskScore,
+		RiskLevel riskLevel,
+		Integer accidentCount,
+		String modelVersion
+	) {
+		return new RiskZone(
+			sourceKey, name, latitude, longitude, radius, riskScore,
+			riskLevel, accidentCount, modelVersion
+		);
+	}
+
+	public boolean updateImported(
+		String name,
+		Double latitude,
+		Double longitude,
+		Integer radius,
+		Double riskScore,
+		RiskLevel riskLevel,
+		Integer accidentCount,
+		String modelVersion
+	) {
+		if (Objects.equals(this.name, name)
+			&& Objects.equals(this.latitude, latitude)
+			&& Objects.equals(this.longitude, longitude)
+			&& Objects.equals(this.radius, radius)
+			&& Objects.equals(this.riskScore, riskScore)
+			&& this.riskLevel == riskLevel
+			&& Objects.equals(this.accidentCount, accidentCount)
+			&& Objects.equals(this.modelVersion, modelVersion)) {
+			return false;
+		}
+		this.name = name;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.radius = radius;
+		this.riskScore = riskScore;
+		this.riskLevel = riskLevel;
+		this.accidentCount = accidentCount;
+		this.modelVersion = modelVersion;
+		return true;
+	}
+
 	public Long getId() {
 		return id;
+	}
+
+	public String getSourceKey() {
+		return sourceKey;
 	}
 
 	public String getName() {
