@@ -6,6 +6,7 @@ import com.bmw.osori.domain.riskzone.exception.RiskZoneErrorCode;
 import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneDetailResponse;
 import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneListResponse;
 import com.bmw.osori.global.exception.BusinessException;
+import com.bmw.osori.global.geo.GeoDistance;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class RiskZoneService {
-
-	private static final double EARTH_RADIUS_IN_METERS = 6_371_000;
 
 	private final RiskZoneRepository riskZoneRepository;
 
@@ -26,13 +25,13 @@ public class RiskZoneService {
 	public RiskZoneListResponse getRiskZones(Double latitude, Double longitude, Integer radius) {
 		List<RiskZone> riskZones = riskZoneRepository.findAll()
 			.stream()
-			.filter(riskZone -> calculateDistanceInMeters(
+			.filter(riskZone -> GeoDistance.inMeters(
 				latitude,
 				longitude,
 				riskZone.getLatitude(),
 				riskZone.getLongitude()
 			) <= radius)
-			.sorted(Comparator.comparingDouble(riskZone -> calculateDistanceInMeters(
+			.sorted(Comparator.comparingDouble(riskZone -> GeoDistance.inMeters(
 				latitude,
 				longitude,
 				riskZone.getLatitude(),
@@ -48,24 +47,5 @@ public class RiskZoneService {
 			.orElseThrow(() -> new BusinessException(RiskZoneErrorCode.RISK_ZONE_NOT_FOUND));
 
 		return RiskZoneDetailResponse.from(riskZone);
-	}
-
-	private double calculateDistanceInMeters(
-		double sourceLatitude,
-		double sourceLongitude,
-		double targetLatitude,
-		double targetLongitude
-	) {
-		double sourceLatitudeRadians = Math.toRadians(sourceLatitude);
-		double targetLatitudeRadians = Math.toRadians(targetLatitude);
-		double latitudeDifference = Math.toRadians(targetLatitude - sourceLatitude);
-		double longitudeDifference = Math.toRadians(targetLongitude - sourceLongitude);
-
-		double haversine = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2)
-			+ Math.cos(sourceLatitudeRadians) * Math.cos(targetLatitudeRadians)
-			* Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2);
-		double angularDistance = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
-
-		return EARTH_RADIUS_IN_METERS * angularDistance;
 	}
 }
