@@ -5,6 +5,7 @@ import com.bmw.osori.domain.riskzone.domain.RiskZoneRepository;
 import com.bmw.osori.domain.riskzone.exception.RiskZoneErrorCode;
 import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneDetailResponse;
 import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneListResponse;
+import com.bmw.osori.domain.riskzone.presentation.dto.response.RiskZoneListResponse.RiskZoneResponse;
 import com.bmw.osori.global.exception.BusinessException;
 import com.bmw.osori.global.geo.GeoDistance;
 import java.util.Comparator;
@@ -23,23 +24,16 @@ public class RiskZoneService {
 	}
 
 	public RiskZoneListResponse getRiskZones(Double latitude, Double longitude, Integer radius) {
-		List<RiskZone> riskZones = riskZoneRepository.findAll()
+		List<RiskZoneResponse> riskZones = riskZoneRepository.findAll()
 			.stream()
-			.filter(riskZone -> GeoDistance.inMeters(
-				latitude,
-				longitude,
-				riskZone.getLatitude(),
-				riskZone.getLongitude()
-			) <= radius)
-			.sorted(Comparator.comparingDouble(riskZone -> GeoDistance.inMeters(
-				latitude,
-				longitude,
-				riskZone.getLatitude(),
-				riskZone.getLongitude()
+			.map(riskZone -> RiskZoneResponse.from(riskZone, GeoDistance.inMeters(
+				latitude, longitude, riskZone.getLatitude(), riskZone.getLongitude()
 			)))
+			.filter(riskZone -> riskZone.distance() <= radius)
+			.sorted(Comparator.comparingDouble(RiskZoneResponse::distance))
 			.toList();
 
-		return RiskZoneListResponse.from(riskZones);
+		return new RiskZoneListResponse(riskZones);
 	}
 
 	public RiskZoneDetailResponse getRiskZone(Long riskZoneId) {

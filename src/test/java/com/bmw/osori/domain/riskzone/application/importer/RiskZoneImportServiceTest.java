@@ -43,7 +43,7 @@ class RiskZoneImportServiceTest {
 		assertThat(result.failedCount()).isZero();
 		RiskZone saved = riskZoneRepository.findBySourceKey("zone-1").orElseThrow();
 		assertThat(saved.getRiskLevel()).isEqualTo(RiskLevel.HIGH);
-		assertThat(riskZoneService.getRiskZones(37.5665, 126.978, 100).content())
+		assertThat(riskZoneService.getRiskZones(37.5665, 126.978, 100).riskZones())
 			.extracting(zone -> zone.riskZoneId()).containsExactly(saved.getId());
 	}
 

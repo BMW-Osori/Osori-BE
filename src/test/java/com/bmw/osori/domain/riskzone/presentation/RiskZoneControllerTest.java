@@ -46,6 +46,7 @@ class RiskZoneControllerTest {
 				37.5665,
 				126.978,
 				100,
+				84.3,
 				87.5,
 				RiskLevel.HIGH,
 				12
@@ -62,14 +63,16 @@ class RiskZoneControllerTest {
 			.andExpect(jsonPath("$.success").value(true))
 			.andExpect(jsonPath("$.code").value("COMMON_200"))
 			.andExpect(jsonPath("$.message").value("요청에 성공했습니다."))
-			.andExpect(jsonPath("$.data.content[0].riskZoneId").value(1))
-			.andExpect(jsonPath("$.data.content[0].name").value("어린이보호구역 인근 교차로"))
-			.andExpect(jsonPath("$.data.content[0].latitude").value(37.5665))
-			.andExpect(jsonPath("$.data.content[0].longitude").value(126.978))
-			.andExpect(jsonPath("$.data.content[0].radius").value(100))
-			.andExpect(jsonPath("$.data.content[0].riskScore").value(87.5))
-			.andExpect(jsonPath("$.data.content[0].riskLevel").value("HIGH"))
-			.andExpect(jsonPath("$.data.content[0].accidentCount").value(12));
+			.andExpect(jsonPath("$.data.riskZones[0].riskZoneId").value(1))
+			.andExpect(jsonPath("$.data.riskZones[0].name").value("어린이보호구역 인근 교차로"))
+			.andExpect(jsonPath("$.data.riskZones[0].latitude").value(37.5665))
+			.andExpect(jsonPath("$.data.riskZones[0].longitude").value(126.978))
+			.andExpect(jsonPath("$.data.riskZones[0].radius").value(100))
+			.andExpect(jsonPath("$.data.riskZones[0].distance").value(84.3))
+			.andExpect(jsonPath("$.data.riskZones[0].riskScore").value(87.5))
+			.andExpect(jsonPath("$.data.riskZones[0].riskLevel").value("HIGH"))
+			.andExpect(jsonPath("$.data.riskZones[0].accidentCount").value(12))
+			.andExpect(jsonPath("$.data.content").doesNotExist());
 	}
 
 	@Test

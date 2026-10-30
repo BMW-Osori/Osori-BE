@@ -36,6 +36,6 @@ public class MapService {
 			.limit(MAX_RECENT_EVENTS)
 			.toList();
 
-		return MapResponse.from(riskZoneService.getRiskZones(latitude, longitude, radius).content(), events);
+		return MapResponse.from(riskZoneService.getRiskZones(latitude, longitude, radius).riskZones(), events);
 	}
 }
