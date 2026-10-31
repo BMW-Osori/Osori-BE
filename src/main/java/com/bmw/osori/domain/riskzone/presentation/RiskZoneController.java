@@ -53,13 +53,14 @@ public class RiskZoneController {
 						  "code": "COMMON_200",
 						  "message": "요청에 성공했습니다.",
 						  "data": {
-						    "content": [
+					    "riskZones": [
 						      {
 						        "riskZoneId": 1,
 						        "name": "어린이보호구역 인근 교차로",
 						        "latitude": 37.5665,
 						        "longitude": 126.978,
 						        "radius": 100,
+					        "distance": 0.0,
 						        "riskScore": 87.5,
 						        "riskLevel": "HIGH",
 						        "accidentCount": 12

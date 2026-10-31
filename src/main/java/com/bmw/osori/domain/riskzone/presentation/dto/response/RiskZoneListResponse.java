@@ -8,16 +8,8 @@ import java.util.List;
 @Schema(description = "주변 위험구역 목록 조회 응답")
 public record RiskZoneListResponse(
 	@Schema(description = "위험구역 목록")
-	List<RiskZoneResponse> content
+	List<RiskZoneResponse> riskZones
 ) {
-
-	public static RiskZoneListResponse from(List<RiskZone> riskZones) {
-		List<RiskZoneResponse> responses = riskZones.stream()
-			.map(RiskZoneResponse::from)
-			.toList();
-
-		return new RiskZoneListResponse(responses);
-	}
 
 	@Schema(description = "위험구역 목록 항목")
 	public record RiskZoneResponse(
@@ -36,6 +28,9 @@ public record RiskZoneListResponse(
 		@Schema(description = "위험 반경(m)", example = "100")
 		Integer radius,
 
+		@Schema(description = "현재 위치에서 위험구역 중심까지의 거리(m)", example = "84.3")
+		Double distance,
+
 		@Schema(description = "위험도 점수", example = "87.5")
 		Double riskScore,
 
@@ -46,13 +41,14 @@ public record RiskZoneListResponse(
 		Integer accidentCount
 	) {
 
-		private static RiskZoneResponse from(RiskZone riskZone) {
+		public static RiskZoneResponse from(RiskZone riskZone, double distance) {
 			return new RiskZoneResponse(
 				riskZone.getId(),
 				riskZone.getName(),
 				riskZone.getLatitude(),
 				riskZone.getLongitude(),
 				riskZone.getRadius(),
+				distance,
 				riskZone.getRiskScore(),
 				riskZone.getRiskLevel(),
 				riskZone.getAccidentCount()

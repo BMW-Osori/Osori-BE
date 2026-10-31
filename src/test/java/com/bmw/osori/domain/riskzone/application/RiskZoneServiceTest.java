@@ -1,6 +1,7 @@
 package com.bmw.osori.domain.riskzone.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -26,8 +27,10 @@ class RiskZoneServiceTest {
 
 		RiskZoneListResponse response = riskZoneService.getRiskZones(0.0, 0.0, 100);
 
-		assertThat(response.content()).extracting(RiskZoneResponse::riskZoneId)
+		assertThat(response.riskZones()).extracting(RiskZoneResponse::riskZoneId)
 			.containsExactly(1L, 2L);
+		assertThat(response.riskZones().get(0).distance()).isZero();
+		assertThat(response.riskZones().get(1).distance()).isCloseTo(55.6, offset(0.1));
 	}
 
 	@Test
@@ -38,8 +41,9 @@ class RiskZoneServiceTest {
 
 		RiskZoneListResponse response = riskZoneService.getRiskZones(0.0, 0.0, 0);
 
-		assertThat(response.content()).extracting(RiskZoneResponse::riskZoneId)
+		assertThat(response.riskZones()).extracting(RiskZoneResponse::riskZoneId)
 			.containsExactly(1L);
+		assertThat(response.riskZones().getFirst().distance()).isZero();
 	}
 
 	private RiskZone riskZone(Long id, double latitude) {

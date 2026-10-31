@@ -30,7 +30,7 @@ class MapServiceTest {
 	void 반경_내_위험구역과_최근_이벤트를_지도_응답으로_조회한다() {
 		given(riskZoneService.getRiskZones(37.5665, 126.978, 100))
 			.willReturn(new RiskZoneListResponse(List.of(
-				new RiskZoneResponse(32L, "위험구역", 37.5665, 126.978, 50, 87.2, RiskLevel.HIGH, 3)
+				new RiskZoneResponse(32L, "위험구역", 37.5665, 126.978, 50, 0.0, 87.2, RiskLevel.HIGH, 3)
 			)));
 		List<ProximityEvent> events = List.of(
 			event(125L, 37.5665, 126.978, AlertLevel.DANGER),
